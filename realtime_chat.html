@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <h1>🌷sadieと話そう🌷</h1>
+    <meta charset="UTF-8">
+    <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge"> -->
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <title>Firebase_version9_RealtimeDB</title>
+    <!-- <style>.remove:hover{background:aquamarine;}</style> -->
+</head>
+<link rel="stylesheet" href="chat.css">
+<body>
+
+    <div class="container">
+        <div class="chat-area">
+            <div id="output" style="overflow: auto; height: 80vh;"></div>
+        <div class="textbox"> Name：<input type="text" id="uname"> 
+        <div style="width: 100%;">
+            <textarea style="width: 80%;" id="text" cols="30" rows="10"></textarea>
+            <button id="send">Send</button>
+        </div></div>
+        <!-- <div id="output" style="overflow: auto; height: 300px;"></div> -->
+    </div>
+    </div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+import { getDatabase, ref, push, set, onChildAdded, remove, onChildRemoved } 
+from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAmwY9dGS7XcsDZVm5OeQps-H1uTB8jCpc",
+  authDomain: "sample-6e2c7.firebaseapp.com",
+  projectId: "sample-6e2c7",
+  storageBucket: "sample-6e2c7.appspot.com",
+  messagingSenderId: "624157621351",
+  appId: "1:624157621351:web:4f1cc9abe66defec06a8c2"
+
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const dbRef = ref(db, "chat");
+// var myName = prompt("Enter your name");
+
+$("#send").on("click",function(){
+    const msg = {
+        uname : $("#uname").val(),
+        text  : $("#text").val()
+    }
+    const newPostRef = push(dbRef) //database上にユニークなキーを生成するという意味。生成されたキーを確認するためにはconsole.log(newPostRef);を入れる
+    //ユニークキーを生成しないと、毎回上書きなってしまう
+    set(newPostRef,msg);
+});
+
+onChildAdded(dbRef, function(data){
+    const msg = data.val();
+    const key = data.key; //ユニークなキーを取得する
+    const uname = msg.uname
+    if(msg.uname === "sadie"){
+        console.log("abc");
+        let h = '<div class="right1"><p>'+ uname + '</p></div><div class="right"><p>';
+        // h += msg.uname;
+        // h += '<br>';
+        h += msg.text;
+        h += '</p></div>';
+        $("#output").append(h);
+    }
+    else{
+        console.log(uname)
+        let h = '<div class="left1"><p>'+ uname + '</p></div><div class="left"><p>';
+        // h += uname;
+        // h += '<br>';
+        h += msg.text;
+        h += '</p></div>';
+        $("#output").append(h);
+        }
+
+})
+</script>
+
+
+
+<!-- <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js"></script>
+<script>
+// Your web app's Firebase configuration
+var firebaseConfig = {
+    // Import the functions you need from the SDKs you need
+
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+
+
+// Initialize Firebase
+
+
+    function sendMessage (){
+    var message = document.getElementById("message").val;
+
+    firebase.database().ref("message").push().set({
+        "sender": myName,
+        "message": message
+    })
+    document.getElementById("message").value = ""; 
+    return false;
+    };
+}
+</script>
+
+<form onSubmit="return sendMessage();">
+    <input id="message" placeholder="Enter message" autocomplete="off">
+    <input type="submit" value="Send">
+</form> -->
+</body>
+</html>
